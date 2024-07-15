@@ -1,0 +1,59 @@
+# File dove sono deviniti i servizi da utilizzare (cioè i container da eseguire)
+
+# Definizione della versione del file
+version: "3.8"
+
+# Servizi
+services:
+    # Servizio db
+    db:
+        # Informazioni necessarie per avviare il container
+        image: postgres:12
+        container_name: notes-db-dev
+        volumes:
+            - notes-db-dev-data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: notesdb
+            POSTGRES_PASSWORD: secret
+    # Servizio api
+    api:
+        # Informazioni necessarie per avviare il container
+        build:
+            context: ./api
+            dockerfile: Dockerfile.dev
+        image: notes-api:dev
+        container_name: notes-api-dev
+        environment:
+            DB_HOST: db ## same as the database service name
+            DB_DATABASE: notesdb
+            DB_PASSWORD: secret
+        volumes:
+            - /home/node/app/node_modules
+            - ./api:/home/node/app
+        ports:
+            - 3000:3000
+# Volumi usati dai Servizi
+volumes:
+    notes-db-dev-data:
+        name: notes-db-dev-data
+
+# Per avviare i servizi in Docker Compose, definiti in un file YAML
+# Comando che svolge il build di ogni immagine mancante, crea e avvia i Container
+#   comando: docker-compose --file docker-compose.yaml up --detach
+# (L'opzione --build per il comando up forza un rebuild delle immagini)
+# oppure abbreviato perchè il file si chiama docker-compose
+#   comando: docker-compose up -d
+# Comando che non crea Container mancanti, ma avvia solo Container già esistenti.
+#   comando: docker-compose start
+# Comando per elencare tutti i Container dei servizi avviati da Compose
+#   comando: docker-compose ps
+# Comando per eseguire un comando all'interno del servizio
+#   comando: docker-compose exec <nome servizio> <comando>
+# Esempio per eseguire il comando npm run db:migrate all'interno del servizio api
+#   esempio: docker-compose exec api npm run db:migrate
+# Comando per bloccare tutti i container in esecuzione e rimuoverli dal sistema
+# (rimuove anche tutte le reti)
+#   comando: docker-compose down --volumes
+# (L'opzione --volumes indica che vuoi rimuovere ogni volume con nome definito nel blocco volumes)
+# Comando per stoppare tutti i container in esecuzione e mantenerli
+#   comando: docker-compose stop
