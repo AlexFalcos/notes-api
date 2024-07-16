@@ -1,4 +1,4 @@
-# fullstack-notes-application
+# notes-api
 Esempio con Docker Composer
 
 N.B.: Occorre eseguire la migrazione del database necessaria per configurare le tabelle del database.
